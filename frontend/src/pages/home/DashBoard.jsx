@@ -25,10 +25,9 @@ const DashBoard = () => {
   const fetchAllSessions = async () => {
     try {
       const response = await axiosInstance.get(API_PATHS.SESSION.GET_ALL);
-      console.log(response.data);
       setSessions(response.data);
     } catch (err) {
-      console.log("error fetching sessions data", err);
+      // Error fetching sessions
     }
   };
 
@@ -57,8 +56,6 @@ const DashBoard = () => {
       // Refresh sessions
       await fetchAllSessions();
     } catch (error) {
-      console.error("Error deleting session data:", error);
-      console.error("Error details:", error.response?.data);
       toast.error("Failed to delete session");
 
       // Close modal even on error after showing the error message

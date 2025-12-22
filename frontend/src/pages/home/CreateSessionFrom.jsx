@@ -47,14 +47,6 @@ const CreateSessionForm = () => {
       );
       const generatedQuestions = aiResponse.data;
       
-      console.log("AI Response received:", {
-        dataType: typeof generatedQuestions,
-        isArray: Array.isArray(generatedQuestions),
-        length: Array.isArray(generatedQuestions) ? generatedQuestions.length : "N/A",
-        firstItem: Array.isArray(generatedQuestions) ? generatedQuestions[0] : generatedQuestions,
-        full: generatedQuestions
-      });
-      
       const response = await axiosInstance.post(API_PATHS.SESSION.CREATE, {
         ...formData,
         questions: generatedQuestions,
