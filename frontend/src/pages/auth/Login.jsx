@@ -1,0 +1,209 @@
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Inputs from "../../components/inputs/Inputs";
+import { validateEmail } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import { UserContext } from "../../context/UserContext";
+
+const Login = ({ setCurrentPage, onClose }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const { updateUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // Basic validations
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter the password.");
+      return;
+    }
+
+  
+    setError("");
+
+    // API call
+    try {
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password,
+      });
+
+      const { token } = response.data;
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(response.data);
+        navigate("/dashboard");
+      }
+      // await axios.post(...) or your login API
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex w-screen relative bg-[#FFFCEF]">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-50 w-8 h-8 bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-full flex items-center justify-center transition-colors"
+      >
+        <svg
+          className="w-4 h-4 text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+
+      <div className="w-full lg:w-2/5 bg-[#FFFCEF] flex flex-col justify-center px-8 lg:px-16">
+     
+        <h1 className="text-3xl font-bold text-black mb-2">
+          Log in to your account
+        </h1>
+
+      
+        <p className="text-gray-700 mb-8 h-20">
+          Don't have an account?{" "}
+          <button
+            className="text-[#FF9324] hover:underline font-medium cursor-pointer "
+            onClick={() => setCurrentPage("signup")}
+          >
+            Sign Up
+          </button>
+        </p>
+
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-black mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={({ target }) => setEmail(target.value)}
+              placeholder="Enter your email"
+              className="w-full px-3 py-2 border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9324] focus:border-transparent placeholder:text-neutral-500 text-neutral-700 bg-[#FFFFF8]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-black mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+              placeholder="Enter your password"
+              className="w-full px-3 py-2 border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9324] focus:border-transparent placeholder:text-neutral-500 text-neutral-700 bg-[#FFFFF8]"
+            />
+          </div>
+
+          {error && <p className="text-red-500 text-sm pb-2 px-2 text-right">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-linear-to-r from-[#FF9324] to-[#e99a4b] text-white py-3 px-4 rounded-lg font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"
+          >
+            Log In
+          </button>
+        </form>
+      </div>
+
+      <div className="hidden lg:flex lg:w-3/5 bg-black relative overflow-hidden">
+      
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-black to-zinc-900"></div>
+
+   
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-16 h-16 border border-white/20 rotate-45"></div>
+          <div className="absolute top-32 right-32 w-12 h-12 border border-white/15 rotate-12"></div>
+          <div className="absolute bottom-32 left-32 w-20 h-20 border border-white/25 -rotate-12"></div>
+          <div className="absolute bottom-20 right-20 w-14 h-14 border border-white/20 rotate-45"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border border-white/10 rotate-45"></div>
+        </div>
+
+        
+        <div className="absolute inset-0 opacity-15">
+       
+          <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent"></div>
+          <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400/25 to-transparent"></div>
+
+          
+          <div className="absolute top-1/4 left-1/4 w-px h-32 bg-gradient-to-b from-cyan-400/30 to-transparent"></div>
+          <div className="absolute top-1/2 right-1/4 w-px h-24 bg-gradient-to-b from-blue-400/20 to-transparent"></div>
+          <div className="absolute bottom-1/4 left-1/2 w-px h-28 bg-gradient-to-b from-purple-400/25 to-transparent"></div>
+        </div>
+
+        <div className="absolute inset-0">
+          
+          <div className="absolute top-16 left-16 w-3 h-3 bg-cyan-400/40 rounded-full blur-sm animate-pulse"></div>
+          <div
+            className="absolute top-24 right-24 w-2 h-2 bg-blue-400/50 rounded-full blur-sm animate-pulse"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute bottom-24 left-24 w-2.5 h-2.5 bg-purple-400/40 rounded-full blur-sm animate-pulse"
+            style={{ animationDelay: "2s" }}
+          ></div>
+          <div
+            className="absolute bottom-16 right-16 w-1.5 h-1.5 bg-cyan-400/60 rounded-full blur-sm animate-pulse"
+            style={{ animationDelay: "0.5s" }}
+          ></div>
+
+        </div>
+
+        
+        <div className="absolute inset-10">
+          <div className="absolute top-8 left-8 w-8 h-8 border-l-2 border-t-2 border-cyan-400/30"></div>
+          <div className="absolute top-8 right-8 w-8 h-8 border-r-2 border-t-2 border-blue-400/30"></div>
+          <div className="absolute bottom-8 left-8 w-8 h-8 border-l-2 border-b-2 border-purple-400/30"></div>
+          <div className="absolute bottom-8 right-8 w-8 h-8 border-r-2 border-b-2 border-cyan-400/30"></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col justify-center px-26 text-white">
+          <h2 className="text-[3vw] font-bold mb-4 leading-tight text-center px-7">
+            Ace Your Next Interview with AI-Powered Learning!
+          </h2>
+
+          <p className="text-lg  text-gray-300 ">
+            Get role-specific questions, expand answers when you need them, and
+            dive deeper into concepts. From preparation to mastery — your ultimate interview toolkit is
+            here.
+          </p>
+
+          
+
+         
+        </div>
+
+       
+      </div>
+    </div>
+  );
+};
+
+export default Login;
